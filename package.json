@@ -1,0 +1,28 @@
+{
+  "name": "csvtojsonbot",
+  "version": "1.0.0",
+  "description": "Convert csv files to json",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rotimi-best/csvtojsonbot.git"
+  },
+  "keywords": [
+    "csvtojson",
+    "csv",
+    "json"
+  ],
+  "author": "rotimi-best",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rotimi-best/csvtojsonbot/issues"
+  },
+  "homepage": "https://github.com/rotimi-best/csvtojsonbot#readme",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0",
+    "nodemon": "^1.19.1"
+  }
+}
