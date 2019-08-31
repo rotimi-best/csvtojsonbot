@@ -1,2 +1,2 @@
 # csvtojsonbot
-Converts csv to jsob
+Converts csv to json
