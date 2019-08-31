@@ -4,6 +4,8 @@
   "description": "Convert csv files to json",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "node test.js"
   },
   "repository": {
@@ -22,7 +24,10 @@
   },
   "homepage": "https://github.com/rotimi-best/csvtojsonbot#readme",
   "dependencies": {
+    "csvtojson": "^2.0.10",
+    "dotenv": "^8.1.0",
     "node-telegram-bot-api": "^0.30.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "request": "^2.88.0"
   }
 }
