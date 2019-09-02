@@ -1,7 +1,7 @@
 require('dotenv').config()
 const { log, debug } = console
 
-const { BOT_TOKEN } = process.env
+const { BOT_TOKEN, ADMIN_CHAT_ID } = process.env
 const TelegramBot = require('node-telegram-bot-api')
 const request = require('request')
 const fs = require('fs')
@@ -9,21 +9,24 @@ const csv = require('csvtojson')
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true })
 
-const jsonData = []
-
 /**
  * Get document from user
+ * Convert to json
+ * Send to user
+ * Delete json from file system
  */
 bot.on('message', async (props) => {
-  const { chat: { id: chatId }, document = null } = props;
+  const { chat: { id: chatId, first_name, username }, document = null } = props;
 
-  debug('Current user', props)
+  bot.sendMessage(ADMIN_CHAT_ID, `${first_name} is using your bot. Contact: @${username || "nousername"}`)
 
   if (!document) {
-    return bot.sendMessage(chatId, 'Sorry this must be a file');
+    return bot.sendMessage(chatId, 'Sorry you must send a file');
   }
 
   const { file_id, file_name } = document;
+  const fileName = `files/${file_name.replace('.csv', '.json')}`
+  const jsonData = [];
   let file;
 
   try {
@@ -37,27 +40,28 @@ bot.on('message', async (props) => {
     const { file_path } = file;
     const csvPath = `https://api.telegram.org/file/bot${BOT_TOKEN}/${file_path}`
 
+    const profile = { chatId, fileName }
+
     csv()
       .fromStream(request.get(csvPath))
       .subscribe(
-        onJsonReceived,
+        nextJsonData => jsonData.push(nextJsonData),
         onCsvError,
-        () => onCsvCompleted(file_name)
+        () => onCsvCompleted(jsonData, profile)
       );
   }
 })
 
-const onJsonReceived = nextJsonData => {
-  log('recieved', nextJsonData)
-  jsonData.push(nextJsonData)
-}
 const onCsvError = err => log('onCsvError', err)
-const onCsvCompleted = filename => log('onJsonReceived: ', jsonData, '\nfilename: ', filename)
+const onCsvCompleted = (jsonData, profile) => writeJsonDataIntoFile(jsonData, profile)
+const writeJsonDataIntoFile = (jsonData, { fileName, chatId }) => {
+  fs.writeFile(fileName, JSON.stringify(jsonData), async err => {
+    if (err) {
+      return log('Error while inserting', err)
+    }
 
+    await bot.sendDocument(chatId, fileName);
 
-// Insert the file
-const writeFile = () => {
-  fs.writeFile()
+    return fs.unlinkSync(fileName);
+  })
 }
-// Send the file
-// Delete the file from the file system
