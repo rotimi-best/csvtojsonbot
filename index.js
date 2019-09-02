@@ -24,6 +24,10 @@ bot.on('message', async (props) => {
     return bot.sendMessage(chatId, 'Sorry you must send a file');
   }
 
+  if (document.file_name.indexOf('.csv') === -1) {
+    return bot.sendMessage(chatId, 'You must send a csv file');
+  }
+
   const { file_id, file_name } = document;
   const fileName = `files/${file_name.replace('.csv', '.json')}`
   const jsonData = [];
